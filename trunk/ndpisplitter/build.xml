@@ -98,10 +98,6 @@
 		<copy todir="${dist.dir}/lib" overwrite="true">
 			<fileset dir="${app.lib.dir}/${target-os}" />
 		</copy>
-		<!-- hamamatsu sdk dll -->
-		<copy todir="${dist.dir}/dll" overwrite="true">
-			<fileset dir="install" includes="*.dll" />
-		</copy>
 		<!-- properties file -->
 		<copy todir="${dist.dir}" overwrite="true">
 			<fileset dir="${resources.dir}">
@@ -112,10 +108,6 @@
 		<!-- documentation -->
 		<copy todir="${dist.dir}/docs" overwrite="true">
 			<fileset dir="${docs.dir}"/>
-		</copy>
-		<!-- installers -->
-		<copy todir="${dist.dir}/Installers" overwrite="true">
-			<fileset dir="install" includes="*.exe" />
 		</copy>
 	</target>
 	
