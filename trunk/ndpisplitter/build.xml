@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+
+<project name="ndpisplitter" basedir="." default="all">
+	<description>Build for the NDPI Splitter</description>
+
+	<!-- import the shared targets -->
+	<import file="${basedir}/../intersect-common/common-build.xml" />
+	
+	<!-- locationn of ndpi reader project -->
+	<property name="ndpi.reader.dir" location="${basedir}/../ndpi-reader"/>
+
+	<!-- project directories -->
+	<property name="test.lib.dir" location="lib/test" />
+	<property name="app.lib.dir" location="lib/app" />
+	<property name="resources.dir" location="resources" />
+	<property name="docs.dir" location="doc" />
+	
+	<!-- cobertura exclusions - we don't unit test the UI classes-->
+	<property name="project.specific.cobertura.excludes" value="**au/org/intersect/ndpisplitter/ui/*.class"/>
+
+	<!-- path definitions -->
+	<path id="base.classpath">
+		<fileset dir="${app.lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${app.lib.dir}/win">
+			<include name="*.jar" />
+		</fileset>
+		<!--instrumented classes go first so they are used if they exist-->
+		<pathelement location="${instrumented.classes.dir}" />
+		<pathelement location="${src.compile.dir}" />
+	</path>
+
+	<path id="test.classpath">
+		<path refid="base.classpath" />
+		<path refid="tools.classpath" />
+		<fileset dir="${test.lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${test.compile.dir}" />
+	</path>
+
+	<!-- Private targets - don't do dependency management here. 
+	     Most stuff is inherited from common-build.xml in intersect-common 
+	-->
+
+	<!-- build jar -->
+	<target name="-jar">
+		<!-- copy necessary files -->
+		<copy todir="${dist.work.dir}" overwrite="true">
+			<fileset dir="${src.compile.dir}" />
+		</copy>
+
+		<copy todir="${dist.work.dir}/images" overwrite="true">
+			<fileset dir="${resources.dir}/images"/>
+		</copy>
+
+		<!-- jar it up -->
+		<jar basedir="${dist.work.dir}" destfile="${dist.dir}/NdpiSplitter.jar">
+			<manifest>
+				<attribute name="Main-Class" value="au.org.intersect.ndpisplitter.ui.NdpiApplication" />
+				<attribute name="Class-Path" value="${jar.classpath}" />
+				<!--jai_codec.jar, jai_core.jar -->
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- build the classpath that goes into the Manifest - this is OS-specific because we are using SWT -->
+	<target name="-build-classpath">
+		<!-- get a list of jars in lib/app -->
+		<fileset id="jarfiles" dir="${app.lib.dir}" includes="*.jar" />
+		<property name="jarfile.names" refid="jarfiles" />
+
+		<!-- get a list of jars in lib/app/{os} -->
+		<fileset id="os.jarfiles" dir="${app.lib.dir}/${target-os}" includes="*.jar" />
+		<property name="os.jarfile.names" refid="os.jarfiles" />
+
+		<!-- build the classpath string up -->
+		<echo file="${build.dir}/cp.txt" append="false">.;</echo>
+		<echo file="${build.dir}/cp.txt" append="true">${jarfile.names}</echo>
+		<echo file="${build.dir}/cp.txt" append="true">;</echo>
+		<echo file="${build.dir}/cp.txt" append="true">${os.jarfile.names}</echo>
+
+		<!-- replace ; delimiter with spaces and prefix lib/ -->
+		<replace file="${build.dir}/cp.txt" token=";" value=" lib/" />
+		
+		<!-- read it back into a property read to use in the jar task -->
+		<loadfile property="jar.classpath" srcfile="${build.dir}/cp.txt" />
+		<echo message="${jar.classpath}"/>
+	</target>
+
+	<target name="-copy-extras">
+		<!-- libraries -->
+		<copy todir="${dist.dir}/lib" overwrite="true">
+			<fileset dir="${app.lib.dir}" includes="*.jar"/>
+		</copy>
+		<!-- os-specific libraries -->
+		<copy todir="${dist.dir}/lib" overwrite="true">
+			<fileset dir="${app.lib.dir}/${target-os}" />
+		</copy>
+		<!-- hamamatsu sdk dll -->
+		<copy todir="${dist.dir}/dll" overwrite="true">
+			<fileset dir="install" includes="*.dll" />
+		</copy>
+		<!-- properties file -->
+		<copy todir="${dist.dir}" overwrite="true">
+			<fileset dir="${resources.dir}">
+				<include name="*.properties"/>
+				<include name="*.xml"/>
+			</fileset>
+		</copy>
+		<!-- documentation -->
+		<copy todir="${dist.dir}/docs" overwrite="true">
+			<fileset dir="${docs.dir}"/>
+		</copy>
+		<!-- installers -->
+		<copy todir="${dist.dir}/Installers" overwrite="true">
+			<fileset dir="install" includes="*.exe" />
+		</copy>
+	</target>
+	
+	<target name="-set-target-os" unless="target-os">
+		<property name="target-os" value="win" />
+		<echo message="Setting target OS to Windows" />
+		<echo message="To specify a different environment use 'ant -Dtarget-os=[win|mac] ...'" />
+	</target>
+	
+	<target name="-get-ndpi-reader">
+		<!-- build the ndpi-reader jar and put it in the lib directory -->
+		<ant antfile="${ndpi.reader.dir}/build.xml" target="dist" inheritall="false"/>
+		<copy file="${ndpi.reader.dir}/build/ant/dist/ndpi-reader.jar" todir="${app.lib.dir}"/>
+	</target>
+
+
+	<!-- public targets - dependency management is done here -->
+	<target name="clean" depends="-clean" description="Delete build artifacts" />
+	<target name="compile" depends="-init, -get-ndpi-reader, -compile" description="Compile source and test source" />
+	<target name="test" depends="compile, -copy-test-resources, -test" description="Run junit tests" />
+	<target name="test-instrumented" depends="compile, -copy-test-resources, -instrument-classes, -test, -cobertura-report" description="Run unit tests on instrumented classes and generate coverage report" />
+
+	<target name="checkstyle" depends="-init, -checkstyle" description="Generate a report of coding standards violations" />
+	<!-- cpd, pmd are here to try out - not hooked up with hudson build yet -->
+	<target name="cpd" depends="-init, -cpd" description="Generate a report of code convention violations" />
+	<target name="pmd" depends="-init, -pmd" description="Generate a report of code convention violations" />
+
+	<target name="jar" depends="-set-target-os, compile, -build-classpath, -jar" description="Build the ndpisplitter jar file" />
+	<target name="dist" depends="jar, -copy-extras" description="Build distrubutable artefacts for the ndpisplitter" />
+
+	<target name="all" depends="clean, checkstyle, compile, test" description="Compile, checkstyle, run unit tests" />
+	<target name="hudson-all" depends="clean, checkstyle, compile, test-instrumented" description="Compile, checkstyle, run unit tests with coverage" />
+	<target name="findbugs" depends="-init, -compile, -get-ndpi-reader, -findbugs" description="Generate a report of findbugs violations" />
+
+</project>

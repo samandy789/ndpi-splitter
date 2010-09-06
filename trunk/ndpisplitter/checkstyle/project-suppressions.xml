@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+
+    <!-- Add suppressions here if needed -->
+
+    <!-- SUPPRESSIONS FOR TEST CODE -->
+    <suppress checks="MultipleStringLiterals" files="[/\\]test[/\\]" />
+    <suppress checks="MagicNumber" files="[/\\]test[/\\]" />
+    <suppress checks="ImportControl" files="[/\\]test[/\\]" />
+    <suppress checks="IllegalCatch" files="[/\\]test[/\\]" />
+    <suppress checks="IllegalThrows" files="[/\\]test[/\\]" />
+    <suppress checks="ThrowsCount" files="[/\\]test[/\\]" />
+
+    <suppress checks="ExecutableStatementCount" files="[/\\]test[/\\]" />
+    <suppress checks="OuterTypeNumber" files="[/\\]test[/\\]" />
+    <suppress checks="JavaNCSS" files="[/\\]test[/\\]" />
+    <suppress checks="ClassDataAbstractionCoupling" files="[/\\]test[/\\]" />
+    <suppress checks="CyclomaticComplexity" files="[/\\]test[/\\]" />
+    <suppress checks="ClassFanOutComplexity" files="[/\\]test[/\\]" />
+    <suppress checks="NPathComplexity" files="[/\\]test[/\\]" />
+
+    <suppress checks="MethodLength" files="[/\\]test[/\\]" />
+    <suppress checks="FileLength" files="[/\\]test[/\\]" />
+    <suppress checks="ReturnCount" files="[/\\]test[/\\]" />
+    <suppress checks="ParameterNumber" files="[/\\]test[/\\]" />
+    <suppress checks="JavadocMethod" files="[/\\]test[/\\]" />
+    <suppress checks="JavadocType" files="[/\\]test[/\\]" />
+    <suppress checks="JavadocVariable" files="[/\\]test[/\\]" />
+
+    <!-- wanting to use the junit @Rule with TempoararyFolder requires a public variable -->
+    <suppress checks="VisibilityModifier" files="[/\\]test[/\\]" />
+
+    <!-- checkstyle seems to be wrongly reporting on this one - not sure why -->
+    <suppress checks="RedundantThrows" files="NdpiFileSplitterTest.java" />
+    
+    
+    <!-- SUPPRESSIONS FOR PRODUCTION CODE -->
+
+    <!-- checkstyle seems to be wrongly reporting on this one - not sure why -->
+    <suppress checks="RedundantThrows" files="NdpiWizard.java" />
+
+    <!--  Need magic numbers to generate sequence codes -->
+    <suppress checks="MagicNumber" files="SequenceCodeGeneratorImpl.java" />
+
+    <!-- Places we explicitly want to catch everything -->
+    <suppress checks="IllegalCatch" files="NdpiFileSplitter.java" />
+    <suppress checks="IllegalCatch" files="FileSelectionPage.java" />
+
+    <!-- Allow a main method for the application -->
+    <suppress checks="UncommentedMain" files="NdpiApplication.java" />
+
+    <!--  Need magic numbers to divide by 10 to get first decimal -->
+    <suppress checks="MagicNumber" files="FileSelectionPage.java" />
+
+    <suppress checks="ExecutableStatementCount" files="TilePositionCalculator.java" />
+
+    <!--  -->
+    <suppress checks="AnonInnerLength" files="NdpiWizard.java" />
+    <suppress checks="AnonInnerLength" files="FileSelectionPage.java" />
+
+</suppressions>
