@@ -1,0 +1,1 @@
+Apache Ant is used to build the projects. Both ndpisplitter and snapshot-creator have a "dist" target to allow you to build from source. Note that this software only runs on Windows due to the dependency on the Hamamatsu SDK.
