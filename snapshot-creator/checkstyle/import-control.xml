@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE import-control PUBLIC
+    "-//Puppy Crawl//DTD Import Control 1.0//EN"
+    "http://www.puppycrawl.com/dtds/import_control_1_0.dtd">
+
+    <!--
+        $Id$ This defines legal package dependencies for the NDPI
+        Splitter. This should be used to enforce proper use of the application layers. RULES TBC ONCE WE KNOW THE
+        STRUCTURE
+    -->
+
+<import-control pkg="au.org.intersect.snapshotcreator">
+
+    <allow pkg="java.util" />
+    <allow pkg="java.io" />
+    <allow pkg="org.apache.log4j" />
+
+    <subpackage name="main">
+        <allow pkg="au.org.intersect.snapshotcreator.config" />
+        <allow pkg="au.org.intersect.snapshotcreator.factory" />
+        <allow pkg="au.org.intersect.snapshotcreator.file" />
+        <allow pkg="au.org.intersect.snapshotcreator.snapshot" />
+        <allow pkg="au.org.intersect.snapshotcreator.caisis" />
+        <allow pkg="au.org.intersect.ndpisplitter.splitter" />
+        <allow pkg="org.springframework.context"/>
+    </subpackage>
+
+    <subpackage name="factory">
+        <allow pkg="au.org.intersect.snapshotcreator.snapshot" />
+        <allow pkg="au.org.intersect.ndpisplitter.file" />
+        <allow pkg="au.org.intersect.ndpisplitter.imaging" />
+        <allow pkg="au.org.intersect.ndpisplitter.ndpireader" />
+        <allow pkg="au.org.intersect.ndpisplitter.splitter" />
+        <allow pkg="au.org.intersect.snapshotcreator.imaging" />
+        <allow pkg="au.org.intersect.snapshotcreator.config" />
+    </subpackage>
+
+    <subpackage name="file">
+        <allow pkg="au.org.intersect.ndpisplitter.file" />
+    </subpackage>
+
+    <subpackage name="config">
+        <allow pkg="au.org.intersect.snapshotcreator.imaging" />
+    </subpackage>
+
+    <subpackage name="snapshot">
+        <allow pkg="au.org.intersect.snapshotcreator.config" />
+        <allow pkg="au.org.intersect.snapshotcreator.file" />
+        <allow pkg="au.org.intersect.ndpisplitter.file" />
+        <allow pkg="au.org.intersect.ndpisplitter.splitter" />
+        <allow pkg="au.org.intersect.ndpisplitter.ndpireader" />
+        <allow pkg="au.org.intersect.ndpisplitter.util" />
+    </subpackage>
+
+    <subpackage name="imaging">
+        <allow pkg="java.awt" />
+        <allow pkg="javax.imageio" />
+        <allow pkg="au.org.intersect.ndpisplitter.imaging" />
+    </subpackage>
+
+    <subpackage name="caisis">
+        <allow pkg="au.org.intersect.snapshotcreator.config" />
+        <allow pkg="au.org.intersect.snapshotcreator.file" />
+        <allow pkg="au.org.intersect.snapshotcreator.caisis" />
+        <allow pkg="org.springframework.jdbc" />
+    </subpackage>
+
+
+</import-control>

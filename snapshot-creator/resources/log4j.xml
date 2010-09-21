@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="logs/snapshot-creator.log" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p [%d{ISO8601}] (%x) %c{1} - %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p [%d{ISO8601}] (%x) %c{1} - %m%n" />
+        </layout>
+    </appender>
+
+    <appender name="email" class="org.apache.log4j.net.SMTPAppender">
+        <param name="SMTPHost" value="zimbra.intersect.org.au" />
+        <param name="From" value="georgina@intersect.org.au" />
+        <param name="To" value="georgina@intersect.org.au" />
+        <param name="CC" value="" />
+        <!--  uncomment these if authentication is required
+        <param name="SMTPUsername" value="" />
+        <param name="SMTPPassword" value="" />
+         -->
+        <param name="Subject" value="Error in snapshot creator" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="Error occurred at [%d{ISO8601}]%n%x%n%n%m%n" />
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="error" />
+            <param name="LevelMax" value="fatal" />
+        </filter>
+    </appender>
+    <root>
+        <priority value="info" />
+        <appender-ref ref="file" />
+        <appender-ref ref="stdout" />
+        <appender-ref ref="email" />
+    </root>
+
+</log4j:configuration>
