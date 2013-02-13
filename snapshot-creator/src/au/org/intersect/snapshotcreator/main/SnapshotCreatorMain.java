@@ -30,16 +30,17 @@ import au.org.intersect.snapshotcreator.snapshot.SnapshotCreatorHandler;
  * 
  * @version $Rev$
  */
-public class SnapshotCreatorMain
+public class SnapshotCreatorMain 
 {
     private static final String JNA_LIBRARY_PATH_PROPERTY = "jna.library.path";
-    private static final Logger LOG = Logger.getLogger(SnapshotCreatorMain.class);
+    private static final Logger LOG = Logger
+            .getLogger(SnapshotCreatorMain.class);
 
     private final NdpiFileSplitter splitter;
     private final NdpiFileInfoGetter fileInfoGetter;
     private SnapshotCreatorProperties properties;
 
-    public SnapshotCreatorMain() throws IOException
+    public SnapshotCreatorMain() throws IOException 
     {
         super();
         LOG.info("--------------SnapshotCreatorMain starting-----------------");
@@ -50,18 +51,22 @@ public class SnapshotCreatorMain
         fileInfoGetter = ComponentFactory.getNdpiFileInfoGetterInstance();
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws IOException 
     {
-        try
+        try 
         {
-            if (args.length != 1)
+            if (args.length < 1) 
             {
-                throw new IllegalArgumentException("SnapshotCreatorMain must be called with exactly 1 "
-                        + "argument (which must be the full path of the file to process");
+                throw new IllegalArgumentException(
+                        "SnapshotCreatorMain must be called with at least 1 argument (which "
+                                + "must be the full path of the file to process). Current number of arguments = "
+                                + args.length);
             }
-            new SnapshotCreatorMain().doSnapshotCreation(args[0]);
-        }
-        catch (Throwable t)
+
+            String xyPosition = args.length > 1 ? args[1] : "MM";
+            new SnapshotCreatorMain().doSnapshotCreation(args[0], xyPosition);
+        } 
+        catch (Throwable t) 
         {
             // catch everything to make sure its logged
             LOG.error("Error in SnapshotCreatorMain", t);
@@ -69,20 +74,25 @@ public class SnapshotCreatorMain
         }
     }
 
-    private void doSnapshotCreation(String filePath)
+    private void doSnapshotCreation(String filePath, String xyPosition) 
     {
         NullStatusUpdater statusUpdater = new NullStatusUpdater();
-        FileHandler fileHandler = new SnapshotCreatorHandler(properties, splitter, fileInfoGetter, statusUpdater);
-        FileHandler successHandler = new FileMover(properties.getNdpiProcessedDirectory());
-        FileHandler failureHandler = new FileMover(properties.getNdpiFailedDirectory());
-        SingleFileProcessor processor = new SingleFileProcessor(fileHandler, successHandler, failureHandler);
+        FileHandler fileHandler = new SnapshotCreatorHandler(properties,
+                splitter, fileInfoGetter, statusUpdater, xyPosition);
+        FileHandler successHandler = new FileMover(
+                properties.getNdpiProcessedDirectory());
+        FileHandler failureHandler = new FileMover(
+                properties.getNdpiFailedDirectory());
+        SingleFileProcessor processor = new SingleFileProcessor(fileHandler,
+                successHandler, failureHandler);
         processor.processFile(new File(filePath));
     }
 
-    private static void configureEnvironment()
+    private static void configureEnvironment() 
     {
-        String currentLibraryPath = System.getProperty(JNA_LIBRARY_PATH_PROPERTY);
-        if (currentLibraryPath == null)
+        String currentLibraryPath = System
+                .getProperty(JNA_LIBRARY_PATH_PROPERTY);
+        if (currentLibraryPath == null) 
         {
             currentLibraryPath = "";
         }
@@ -94,20 +104,25 @@ public class SnapshotCreatorMain
         String extraPaths = "/windows/system32;/ndpisplitter/dll";
         // add the current working directory/dll which should be correct
         String workingDirectoryPath = workingDirectory + File.separator + "dll";
-        // include the current library path (if set), working directory, plus extras
-        String newLibraryPath = currentLibraryPath + ";" + workingDirectoryPath + ";" + extraPaths;
+        // include the current library path (if set), working directory, plus
+        // extras
+        String newLibraryPath = currentLibraryPath + ";" + workingDirectoryPath
+                + ";" + extraPaths;
 
         System.setProperty(JNA_LIBRARY_PATH_PROPERTY, newLibraryPath);
-        LOG.info("New jna.library.path " + System.getProperty(JNA_LIBRARY_PATH_PROPERTY));
+        LOG.info("New jna.library.path "
+                + System.getProperty(JNA_LIBRARY_PATH_PROPERTY));
     }
 
-    private static Properties loadProperties() throws IOException
+    private static Properties loadProperties() throws IOException 
     {
         Properties properties = new Properties();
-        InputStream propertiesStream = SnapshotCreatorMain.class.getResourceAsStream("/snapshot-creator.properties");
-        if (propertiesStream == null)
+        InputStream propertiesStream = SnapshotCreatorMain.class
+                .getResourceAsStream("/snapshot-creator.properties");
+        if (propertiesStream == null) 
         {
-            throw new IllegalStateException("Could not find properties file snapshot-creator.properties");
+            throw new IllegalStateException(
+                    "Could not find properties file snapshot-creator.properties");
         }
         properties.load(propertiesStream);
         return properties;
