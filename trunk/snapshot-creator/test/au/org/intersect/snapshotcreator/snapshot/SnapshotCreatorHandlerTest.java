@@ -66,7 +66,7 @@ public class SnapshotCreatorHandlerTest
     public void setUp()
     {
         MockitoAnnotations.initMocks(this);
-        snapshotCreatorHandler = new SnapshotCreatorHandler(properties, splitter, fileInfoGetter, statusUpdater);
+        snapshotCreatorHandler = new SnapshotCreatorHandler(properties, splitter, fileInfoGetter, statusUpdater, "MM");
     }
 
     @Test

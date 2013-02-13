@@ -34,20 +34,22 @@ public class SnapshotCreatorHandler implements FileHandler
     private final NdpiFileSplitter splitter;
     private final NdpiFileInfoGetter fileInfoGetter;
     private final SnapshotCreatorProperties properties;
+    private String xyPosition;
 
     private StatusUpdater statusUpdater;
 
     public SnapshotCreatorHandler(SnapshotCreatorProperties properties, NdpiFileSplitter splitter,
-            NdpiFileInfoGetter fileInfoGetter, StatusUpdater statusUpdater)
+            NdpiFileInfoGetter fileInfoGetter, StatusUpdater statusUpdater, String xyPosition)
     {
         this.properties = properties;
         this.splitter = splitter;
         this.fileInfoGetter = fileInfoGetter;
         this.statusUpdater = statusUpdater;
+        this.xyPosition = xyPosition;
     }
 
     @Override
-    public void handleFile(File file)
+    public void handleFile(File file) 
     {
         try
         {
@@ -55,8 +57,8 @@ public class SnapshotCreatorHandler implements FileHandler
             LOG.info("Processing " + sourceFilePath);
 
             ImageInformation imageInfo = fileInfoGetter.getImageInformation(sourceFilePath);
-            TilePositions tilePositions = new CentrePositionCalculator(imageInfo, properties.getOutputMagnification(),
-                    properties.getMaxPixelsPerSnapshot());
+            TilePositions tilePositions = new TilePositionCalculator(imageInfo, properties.getOutputMagnification(),
+                    properties.getMaxPixelsPerSnapshot(), this.xyPosition);
             File outputDirectory = new File(properties.getSnapshotsWorkDirectory());
 
             splitter.tileImage(sourceFilePath, tilePositions, imageInfo, properties.getOutputMagnification(),
@@ -73,4 +75,6 @@ public class SnapshotCreatorHandler implements FileHandler
             throw new FileProcessorException("Error tiling image", e);
         }
     }
+
+
 }
